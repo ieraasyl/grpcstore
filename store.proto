@@ -1,0 +1,63 @@
+syntax = "proto3";
+
+package storeproto;
+
+// The go_package option specifies the Go import path for the generated code.
+// This MUST match your go.mod module path + the subdirectory.
+option go_package = "github.com/ieraasyl/grpcstore/storeproto";
+
+// --- Service Definition ---
+
+// The ECommerceStore service definition.
+service ECommerceStore {
+  // Searches for products, streaming results back.
+  rpc searchProducts(SearchRequest) returns (stream Product);
+  
+  // Adds a product to a user's cart.
+  rpc addToCart(AddItemRequest) returns (Cart);
+  
+  // Retrieves the status of a specific order.
+  rpc getOrderStatus(OrderRequest) returns (OrderStatus);
+}
+
+// --- Message Definitions ---
+
+message Product {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  double price = 4;
+}
+
+message SearchRequest {
+  string query = 1;
+  int32 page_size = 2;      // Number of results per page
+  string page_token = 3;     // Token for pagination
+}
+
+message AddItemRequest {
+  string user_id = 1;
+  string product_id = 2;
+  int32 quantity = 3;
+}
+
+message CartItem {
+  Product product = 1;
+  int32 quantity = 2;
+}
+
+message Cart {
+  string user_id = 1;
+  repeated CartItem items = 2;
+  double total_price = 3;
+}
+
+message OrderRequest {
+  string order_id = 1;
+}
+
+message OrderStatus {
+  string order_id = 1;
+  string status = 2;         // e.g., "PENDING", "SHIPPED", "DELIVERED"
+  int64 updated_at = 3;      // Unix timestamp
+}

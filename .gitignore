@@ -1,0 +1,33 @@
+# Binaries
+bin/
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Build / test outputs
+*.test
+*.out
+coverage.out
+
+# Vendor
+vendor/
+
+# Generated protobuf files
+storeproto/*.pb.go
+storeproto/*_grpc.pb.go
+
+# IDEs and editors
+.vscode/
+.idea/
+*.suo
+*.user
+*.userosscache
+*.code-workspace
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Misc
+*.log
