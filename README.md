@@ -85,8 +85,8 @@ $env:SERVER_ADDR="localhost:6767"; go run ./cmd/client
 .
 ├── cmd/
 │   ├── client/         # gRPC client implementation
-│   ├── gen-cert/       # TLS certificate generator
 │   └── server/         # gRPC server implementation
+│   ├── gen-cert.go     # TLS certificate generator
 ├── storeproto/         # Generated protobuf code
 ├── tls/                # TLS certificates
 ├── Dockerfile.client   # Client container image
