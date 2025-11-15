@@ -5,7 +5,10 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"os"
+	"os/signal"
 	"path/filepath"
+	"syscall"
 	"time"
 
 	pb "github.com/ieraasyl/grpcstore/storeproto"
@@ -128,6 +131,16 @@ func main() {
 
 	// Register our service implementation with the gRPC server
 	pb.RegisterECommerceStoreServer(grpcServer, s)
+
+	// Channel to listen for interrupt signals and shut down gracefully
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, os.Interrupt, syscall.SIGTERM)
+
+	go func() {
+		<-quit
+		log.Println("Shutting down server gracefully...")
+		grpcServer.GracefulStop()
+	}()
 
 	log.Printf("Server listening at %v", lis.Addr())
 

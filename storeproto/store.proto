@@ -11,13 +11,13 @@ option go_package = "github.com/ieraasyl/grpcstore/storeproto";
 // The ECommerceStore service definition.
 service ECommerceStore {
   // Searches for products, streaming results back.
-  rpc searchProducts(SearchRequest) returns (stream Product);
+  rpc SearchProducts(SearchRequest) returns (stream Product);
   
   // Adds a product to a user's cart.
-  rpc addToCart(AddItemRequest) returns (Cart);
+  rpc AddToCart(AddItemRequest) returns (Cart);
   
   // Retrieves the status of a specific order.
-  rpc getOrderStatus(OrderRequest) returns (OrderStatus);
+  rpc GetOrderStatus(OrderRequest) returns (OrderStatus);
 }
 
 // --- Message Definitions ---
