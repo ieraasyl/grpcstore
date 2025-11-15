@@ -5,11 +5,13 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"path/filepath"
 	"time"
 
 	pb "github.com/ieraasyl/grpcstore/storeproto"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 )
 
 // server struct embeds the generated unimplemented server
@@ -109,8 +111,17 @@ func main() {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
+	// Load TLS credentials
+	certFile := filepath.Join("tls", "server.crt")
+	keyFile := filepath.Join("tls", "server.key")
+
+	creds, err := credentials.NewServerTLSFromFile(certFile, keyFile)
+	if err != nil {
+		log.Fatalf("Failed to load TLS certificates: %v", err)
+	}
+
 	// Create a new gRPC server instance
-	grpcServer := grpc.NewServer()
+	grpcServer := grpc.NewServer(grpc.Creds(creds))
 
 	// Create our server implementation
 	s := newServer()

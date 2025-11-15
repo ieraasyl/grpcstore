@@ -2,23 +2,54 @@ package main
 
 import (
 	"context"
+	"crypto/tls"
+	"crypto/x509"
 	"io"
 	"log"
+	"net"
 	"os"
+	"path/filepath"
 	"time"
 
 	pb "github.com/ieraasyl/grpcstore/storeproto"
+
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/credentials"
 )
 
 func main() {
 	// Read the server address from an environment variable
 	serverAddr := os.Getenv("SERVER_ADDR")
 
+	// Load the server's public certificate to trust it
+	certFile := filepath.Join("tls", "server.crt")
+	caCert, err := os.ReadFile(certFile)
+	if err != nil {
+		log.Fatalf("Failed to read CA certificate: %v", err)
+	}
+
+	certPool := x509.NewCertPool()
+	if !certPool.AppendCertsFromPEM(caCert) {
+		log.Fatalf("Failed to add server CA's certificate to pool")
+	}
+
+	// Use the hostname (e.g., "localhost" or "server") to verify the cert
+	hostname, _, err := net.SplitHostPort(serverAddr)
+	if err != nil {
+		log.Fatalf("Failed to parse server address: %v", err)
+	}
+
+	// Create TLS credentials
+	tlsConfig := &tls.Config{
+		RootCAs:    certPool,
+		ServerName: hostname,
+	}
+
+	creds := credentials.NewTLS(tlsConfig)
+
 	// Connect to the server on port 6767
 	log.Printf("Connecting to gRPC server at %s...", serverAddr)
-	conn, err := grpc.NewClient(serverAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err := grpc.NewClient(serverAddr, grpc.WithTransportCredentials(creds))
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}

@@ -16,10 +16,13 @@ RUN protoc --go_out=./storeproto --go_opt=paths=source_relative \
          --go-grpc_out=./storeproto --go-grpc_opt=paths=source_relative \
          store.proto
 
+COPY tls/server.crt /app/tls/server.crt
+
 RUN CGO_ENABLED=0 go build -o /client ./cmd/client/main.go
 
 FROM scratch
 
 COPY --from=builder /client /client
+COPY --from=builder /app/tls/server.crt /tls/server.crt
 
 ENTRYPOINT ["/client"]

@@ -16,11 +16,16 @@ RUN protoc --go_out=./storeproto --go_opt=paths=source_relative \
          --go-grpc_out=./storeproto --go-grpc_opt=paths=source_relative \
          store.proto
 
+COPY tls/ /app/tls/
+
 RUN CGO_ENABLED=0 go build -o /server ./cmd/server/main.go
 
 FROM scratch
 
 COPY --from=builder /server /server
+
+COPY --from=builder /app/tls/server.crt /tls/server.crt
+COPY --from=builder /app/tls/server.key /tls/server.key
 
 EXPOSE 6767
 
