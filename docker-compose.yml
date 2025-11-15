@@ -1,0 +1,25 @@
+services:
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile.server
+    container_name: grpc-server-compose
+    networks:
+      - grpc-net
+    restart: unless-stopped
+  client:
+    build:
+      context: .
+      dockerfile: Dockerfile.client
+    container_name: grpc-client-compose
+    networks:
+      - grpc-net
+    environment:
+      - SERVER_ADDR=server:6767
+    depends_on:
+      - server
+    restart: "no"
+
+networks:
+  grpc-net:
+    driver: bridge

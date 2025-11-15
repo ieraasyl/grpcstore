@@ -18,6 +18,7 @@ bin/
 Dockerfile.server
 Dockerfile.client
 .dockerignore
+docker-compose.yml
 
 # Ignore the README
 README.md
