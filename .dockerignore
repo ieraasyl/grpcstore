@@ -1,0 +1,23 @@
+# Ignore git history
+.git
+
+# Ignore local binaries
+bin/
+
+# Ignore IDE files
+.vscode/
+
+# Ignore OS files
+.DS_Store
+
+# Ignore local logs or env files
+*.log
+.env
+
+# Ignore the Dockerfiles themselves
+Dockerfile.server
+Dockerfile.client
+.dockerignore
+
+# Ignore the README
+README.md

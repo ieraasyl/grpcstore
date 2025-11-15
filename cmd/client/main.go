@@ -4,6 +4,7 @@ import (
 	"context"
 	"io"
 	"log"
+	"os"
 	"time"
 
 	pb "github.com/ieraasyl/grpcstore/storeproto"
@@ -12,14 +13,18 @@ import (
 )
 
 func main() {
+	// Read the server address from an environment variable
+	serverAddr := os.Getenv("SERVER_ADDR")
+
 	// Connect to the server on port 6767
-	conn, err := grpc.NewClient("localhost:6767", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	log.Printf("Connecting to gRPC server at %s...", serverAddr)
+	conn, err := grpc.NewClient(serverAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}
 	defer conn.Close()
 
-	log.Println("[OK] Successfully connected to gRPC server at localhost:6767")
+	log.Printf("[OK] Successfully connected to gRPC server at %s", serverAddr)
 
 	// Create a new client stub
 	c := pb.NewECommerceStoreClient(conn)
