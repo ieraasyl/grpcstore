@@ -23,7 +23,7 @@ Minimal Go gRPC e-commerce store service with TLS-secured server and client, con
 Run once to create self-signed certificates:
 
 ```bash
-go run ./cmd/gen-cert
+go run ./cmd/gen-cert.go
 ```
 
 This creates `tls/server.crt` and `tls/server.key`.
@@ -56,9 +56,9 @@ go run ./cmd/gen-cert
 Run after modifying `store.proto`:
 
 ```bash
-protoc --go_out=./storeproto --go_opt=paths=source_relative \
-       --go-grpc_out=./storeproto --go-grpc_opt=paths=source_relative \
-       store.proto
+protoc --go_out=. --go_opt=paths=source_relative \
+       --go-grpc_out=. --go-grpc_opt=paths=source_relative \
+       storeproto/store.proto
 ```
 
 ### Run Server
