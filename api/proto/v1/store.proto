@@ -4,7 +4,7 @@ package storeproto;
 
 // The go_package option specifies the Go import path for the generated code.
 // This MUST match your go.mod module path + the subdirectory.
-option go_package = "github.com/ieraasyl/grpcstore/storeproto";
+option go_package = "github.com/ieraasyl/grpcstore/pkg/api/v1";
 
 // --- Service Definition ---
 

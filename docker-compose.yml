@@ -1,4 +1,21 @@
 services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: grpc-postgres
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=grpcstore
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - grpc-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
   server:
     build:
       context: .
@@ -7,6 +24,12 @@ services:
     networks:
       - grpc-net
     restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      - DB_URL=postgres://postgres:postgres@postgres:5432/grpcstore
+
   client:
     build:
       context: .
@@ -23,3 +46,6 @@ services:
 networks:
   grpc-net:
     driver: bridge
+
+volumes:
+  postgres_data:

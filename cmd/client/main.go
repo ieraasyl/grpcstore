@@ -11,7 +11,7 @@ import (
 	"path/filepath"
 	"time"
 
-	pb "github.com/ieraasyl/grpcstore/storeproto"
+	pb "github.com/ieraasyl/grpcstore/pkg/api/v1"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
