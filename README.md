@@ -1,11 +1,13 @@
 # grpcstore
 
-Minimal Go gRPC e-commerce store service with TLS-secured server and client, containerized with Docker.
+Minimal Go gRPC e-commerce store service with TLS-secured server and client, backed by PostgreSQL, and containerized with Docker.
 
 ## Features
 
 - **Protocol Buffers** API definition
 - **TLS-secured** server and client implementation
+- **PostgreSQL** persistence with automatic schema migration
+- **Standard Go Project Layout** structure
 - **Self-contained** certificate generator
 - **Multi-stage** Docker builds
 - **Docker Compose** orchestration for E2E testing
@@ -38,6 +40,8 @@ docker compose up --build --exit-code-from client
 docker compose down
 ```
 
+This starts the **PostgreSQL** database, **gRPC Server**, and runs the **Client** E2E tests.
+
 ## Local Development
 
 ### Initial Setup
@@ -53,18 +57,24 @@ go run ./cmd/gen-cert.go
 
 ### Generate Protobuf Code
 
-Run after modifying `store.proto`:
+Run after modifying `api/proto/v1/store.proto`:
 
 ```bash
-protoc --go_out=. --go_opt=paths=source_relative \
-       --go-grpc_out=. --go-grpc_opt=paths=source_relative \
-       storeproto/store.proto
+protoc --proto_path=api/proto/v1 --go_out=pkg/api/v1 --go_opt=paths=source_relative \
+       --go-grpc_out=pkg/api/v1 --go-grpc_opt=paths=source_relative \
+       api/proto/v1/store.proto
 ```
 
 ### Run Server
 
+You need a running PostgreSQL instance. The easiest way is to use Docker for the DB:
+
 ```bash
-go run ./cmd/server
+# Start Postgres
+docker compose up -d postgres
+
+# Run Server (defaults to localhost DB connection)
+go run ./cmd/server/main.go
 ```
 
 Server listens on port `6767` with TLS.
@@ -73,26 +83,31 @@ Server listens on port `6767` with TLS.
 
 ```bash
 # Linux/macOS
-SERVER_ADDR=localhost:6767 go run ./cmd/client
+SERVER_ADDR=localhost:6767 go run ./cmd/client/main.go
 
 # Windows PowerShell
-$env:SERVER_ADDR="localhost:6767"; go run ./cmd/client
+$env:SERVER_ADDR="localhost:6767"; go run ./cmd/client/main.go
 ```
 
 ## Project Structure
 
 ```
 .
+├── api/
+│   └── proto/v1/       # Protocol Buffer definitions
 ├── cmd/
-│   ├── client/         # gRPC client implementation
-│   └── server/         # gRPC server implementation
-│   ├── gen-cert.go     # TLS certificate generator
-├── storeproto/         # Generated protobuf code
+│   ├── client/         # gRPC client entry point
+│   ├── server/         # gRPC server entry point
+│   └── gen-cert.go     # TLS certificate generator
+├── internal/
+│   ├── db/             # Database connection & migration
+│   └── service/        # Business logic & gRPC implementation
+├── pkg/
+│   └── api/v1/         # Generated Go code (importable)
 ├── tls/                # TLS certificates
 ├── Dockerfile.client   # Client container image
 ├── Dockerfile.server   # Server container image
 ├── docker-compose.yml  # Orchestration configuration
-├── store.proto         # API definition
 └── go.mod              # Go module dependencies
 ```
 

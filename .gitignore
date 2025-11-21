@@ -13,10 +13,6 @@ coverage.out
 # Vendor
 vendor/
 
-# Generated protobuf files
-storeproto/*.pb.go
-storeproto/*_grpc.pb.go
-
 # IDEs and editors
 .vscode/
 .idea/
